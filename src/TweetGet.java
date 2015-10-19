@@ -33,7 +33,8 @@ public final class TweetGet {
     		
     		// connect to MySQL DB on amazon using JDBC
     		conn = DriverManager.getConnection("jdbc:mysql://geotweets.cncbo1roiupx.us-east-1.rds.amazonaws.com:3306/geotweets", "mdt2125", "qwerty123");
-
+    		System.out.println("DB is connected: "+ !conn.isClosed());
+    		
 	     	// connect to twitter
 	    	 ConfigurationBuilder cb = new ConfigurationBuilder();
 	         cb.setDebugEnabled(true)
@@ -51,11 +52,11 @@ public final class TweetGet {
     		ex.printStackTrace();
     		return;
     	} finally {
-    		if (conn != null) {
-    	        try {
-    	            conn.close();
-    	        } catch (SQLException e) { /* ignored */}
-    	    }
+//    		if (conn != null) {
+//    	        try {
+//    	            conn.close();
+//    	        } catch (SQLException e) { /* ignored */}
+//    	    }
     	
     	}
     }
