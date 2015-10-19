@@ -1,3 +1,7 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -21,49 +25,38 @@ public final class TweetGet {
      * @param args
      */
     public static void main(String[] args) throws TwitterException {
-    	//just fill this
-    	 ConfigurationBuilder cb = new ConfigurationBuilder();
-         cb.setDebugEnabled(true)
-           .setOAuthConsumerKey("ICsjVwqwMS2YCVsT3xqAETuxQ")
-           .setOAuthConsumerSecret("DfHEa2M0ZccimRrbXPbZfEM8TH599Wo91DrgI6LVYsdTd4mz86")
-           .setOAuthAccessToken("29206858-Gj7BLDf6ezYnAQPS53lA6ZaRrHLimQLUGWJPoo5k2")
-           .setOAuthAccessTokenSecret("QUBBRe0u0JtKscENwYZXIdKDBokg4fbtrdurcWpxRW8WI");
-         
-        TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
-        StatusListener listener = new StatusListener() {
-            @Override
-            public void onStatus(Status status) {
-            	if (status.getGeoLocation()!= null) {
-            		System.out.println("@" + status.getUser().getScreenName() + "@" + status.getGeoLocation() + " - " + status.getText());
-            	}
-            }
+    	Connection conn = null;
+	   
+    	try {
+    		// tell java I'm using mysql
+    		Class.forName("com.mysql.jdbc.Driver").newInstance();
+    		
+    		// connect to MySQL DB on amazon using JDBC
+    		conn = DriverManager.getConnection("jdbc:mysql://geotweets.cncbo1roiupx.us-east-1.rds.amazonaws.com:3306/geotweets", "mdt2125", "qwerty123");
 
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-//                System.out.println("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
-            }
-
-            @Override
-            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-//                System.out.println("Got track limitation notice:" + numberOfLimitedStatuses);
-            }
-
-            @Override
-            public void onScrubGeo(long userId, long upToStatusId) {
-//                System.out.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
-            }
-
-            @Override
-            public void onStallWarning(StallWarning warning) {
-//                System.out.println("Got stall warning:" + warning);
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                ex.printStackTrace();
-            }
-        };
-        twitterStream.addListener(listener);
-        twitterStream.sample();
+	     	// connect to twitter
+	    	 ConfigurationBuilder cb = new ConfigurationBuilder();
+	         cb.setDebugEnabled(true)
+	           .setOAuthConsumerKey("ICsjVwqwMS2YCVsT3xqAETuxQ")
+	           .setOAuthConsumerSecret("DfHEa2M0ZccimRrbXPbZfEM8TH599Wo91DrgI6LVYsdTd4mz86")
+	           .setOAuthAccessToken("29206858-Gj7BLDf6ezYnAQPS53lA6ZaRrHLimQLUGWJPoo5k2")
+	           .setOAuthAccessTokenSecret("QUBBRe0u0JtKscENwYZXIdKDBokg4fbtrdurcWpxRW8WI");
+	         
+	        TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
+	        StatusListener listener = new StatusDBWriter(conn);
+	            
+	        twitterStream.addListener(listener);
+	        twitterStream.sample();
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    		return;
+    	} finally {
+    		if (conn != null) {
+    	        try {
+    	            conn.close();
+    	        } catch (SQLException e) { /* ignored */}
+    	    }
+    	
+    	}
     }
 }
