@@ -51,13 +51,6 @@ public final class TweetGet {
     	} catch (Exception ex) {
     		ex.printStackTrace();
     		return;
-    	} finally {
-//    		if (conn != null) {
-//    	        try {
-//    	            conn.close();
-//    	        } catch (SQLException e) { /* ignored */}
-//    	    }
-    	
     	}
     }
 }

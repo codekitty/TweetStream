@@ -38,14 +38,15 @@ public class StatusDBWriter implements StatusListener {
             longitude = status.getGeoLocation().getLongitude();
     	}
 		try {    	
-		System.out.println(status.getId() + ":" + status.getUser().getScreenName() + "@" + "lati:" + latitude +  " long: " + longitude  +" - " + status.getText());	
-//		System.out.println("conn is closed in status "+ conn.isClosed());
-
-				
-		String sql = "INSERT INTO tweets (id, screen_name, latitude, longitude, text) " +
-		               "VALUES (?,?,?,?,?);";
+			System.out.println(status.getId() + ":" + status.getUser().getScreenName() + "@" + "lati:" + latitude +  " long: " + longitude  +" - " + status.getText());	
+	
+					
+			String sql = "INSERT INTO tweets (id, screen_name, latitude, longitude, text) " +
+			               "VALUES (?,?,?,?,?);";
+		
 
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			
 			preparedStatement.setLong(1, status.getId());
 			preparedStatement.setString(2, status.getUser().getScreenName());
 			preparedStatement.setDouble(3, latitude);
